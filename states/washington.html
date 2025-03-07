@@ -8,10 +8,8 @@
         body { font-family: Arial, sans-serif; text-align: center; }
         .header { margin: 20px; }
         .state-flag { width: 200px; }
-        .members-container { display: flex; flex-wrap: wrap; justify-content: center; }
-        .member { width: 200px; margin: 20px; text-align: center; }
-        .member img { width: 150px; height: 200px; object-fit: cover; border-radius: 10px; }
-        .member a { text-decoration: none; color: black; font-weight: bold; display: block; margin-top: 10px; }
+        .members-container { display: flex; flex-direction: column; align-items: center; }
+        .member a { text-decoration: none; color: black; font-size: 18px; display: block; margin: 5px 0; }
     </style>
 </head>
 <body>
@@ -33,22 +31,18 @@
                 membersContainer.innerHTML = ""; 
 
                 data.objects.forEach(member => {
-                    let memberDiv = document.createElement("div");
-                    memberDiv.classList.add("member");
+                    if (member.person.bioguideid) {  // Ensure the BioGuide ID exists
+                        let link = document.createElement("a");
+                        link.href = `https://www.congress.gov/member/${member.person.name.toLowerCase().replace(/\s+/g, "-")}/${member.person.bioguideid}`;
+                        link.textContent = member.person.name;
+                        link.target = "_blank"; // Opens in a new tab
 
-                    // Use GovTrack's official photo URL format
-                    let img = document.createElement("img");
-                    img.src = `https://www.govtrack.us/static/legislator-photos/${member.person.id}-100px.jpeg`;
-                    img.alt = member.person.name;
-                    img.onerror = function() { this.src = "https://via.placeholder.com/150"; }; // Fallback image
+                        let memberDiv = document.createElement("div");
+                        memberDiv.classList.add("member");
+                        memberDiv.appendChild(link);
 
-                    let link = document.createElement("a");
-                    link.href = `https://www.congress.gov/member/${member.person.id}`;
-                    link.textContent = member.person.name;
-
-                    memberDiv.appendChild(img);
-                    memberDiv.appendChild(link);
-                    membersContainer.appendChild(memberDiv);
+                        membersContainer.appendChild(memberDiv);
+                    }
                 });
 
             } catch (error) {
