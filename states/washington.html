@@ -3,16 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Washington State Information</title>
+    <title>Washington State Representatives</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; }
-        img { width: 300px; margin-top: 20px; }
+        .members-container { display: flex; flex-wrap: wrap; justify-content: center; }
+        .member { width: 200px; margin: 20px; text-align: center; }
+        .member img { width: 150px; height: 200px; object-fit: cover; border-radius: 10px; }
+        .member a { text-decoration: none; color: black; font-weight: bold; display: block; margin-top: 10px; }
     </style>
 </head>
 <body>
-    <h1>Washington</h1>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Flag_of_Washington.svg/800px-Flag_of_Washington.svg.png" alt="Washington State 
-Flag">
+    <h1>Washington State Representatives</h1>
+    <div class="members-container" id="members"></div>
+
+    <script>
+        async function fetchWashingtonMembers() {
+            try {
+                const response = await fetch("https://api.propublica.org/congress/v1/members/senate/WA/current.json", {
+                    headers: { "X-API-Key": "YOUR_PROPUBLICA_API_KEY" }
+                });
+                const senateData = await response.json();
+
+                const houseResponse = await fetch("https://api.propublica.org/congress/v1/members/house/WA/current.json", {
+                    headers: { "X-API-Key": "YOUR_PROPUBLICA_API_KEY" }
+                });
+                const houseData = await houseResponse.json();
+
+                let members = [...senateData.results, ...houseData.results];
+
+                let membersContainer = document.getElementById("members");
+                membersContainer.innerHTML = ""; 
+
+                members.forEach(member => {
+                    let memberDiv = document.createElement("div");
+                    memberDiv.classList.add("member");
+
+                    let img = document.createElement("img");
+                    img.src = `https://theunitedstates.io/images/congress/225x275/${member.id}.jpg`;
+                    img.alt = member.name;
+
+                    let link = document.createElement("a");
+                    link.href = `https://www.congress.gov/member/${member.id}`;
+                    link.textContent = member.name;
+
+                    memberDiv.appendChild(img);
+                    memberDiv.appendChild(link);
+                    membersContainer.appendChild(memberDiv);
+                });
+
+            } catch (error) {
+                console.error("Error fetching representatives:", error);
+                document.getElementById("members").innerHTML = "<p>Failed to load representatives.</p>";
+            }
+        }
+
+        fetchWashingtonMembers();
+    </script>
 </body>
 </html>
-
