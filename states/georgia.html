@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Georgia State Representatives</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        .header { margin: 20px; }
+        .state-flag { width: 200px; }
+        .members-container { display: flex; flex-direction: column; align-items: center; }
+        .member a { text-decoration: none; color: black; font-size: 18px; display: block; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Georgia</h1>
+        <img class="state-flag" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Flag_of_Georgia.svg/800px-Flag_of_Georgia.svg.png" alt="Georgia State Flag">
+    </div>
+
+    <h2>Current U.S. Senators and Representatives</h2>
+    <div class="members-container" id="members"></div>
+
+    <script>
+        async function fetchGeorgiaMembers() {
+            try {
+                const response = await fetch("https://www.govtrack.us/api/v2/role?current=true&state=GA");
+                const data = await response.json();
+
+                let membersContainer = document.getElementById("members");
+                membersContainer.innerHTML = ""; 
+
+                data.objects.forEach(member => {
+                    if (member.person.bioguideid) {  // Ensure the BioGuide ID exists
+                        let link = document.createElement("a");
+                        link.href = `https://www.congress.gov/member/${member.person.name.toLowerCase().replace(/\s+/g, "-")}/${member.person.bioguideid}`;
+                        link.textContent = member.person.name;
+                        link.target = "_blank"; // Opens in a new tab
+
+                        let memberDiv = document.createElement("div");
+                        memberDiv.classList.add("member");
+                        memberDiv.appendChild(link);
+
+                        membersContainer.appendChild(memberDiv);
+                    }
+                });
+
+            } catch (error) {
+                console.error("Error fetching representatives:", error);
+                document.getElementById("members").innerHTML = "<p>Failed to load representatives.</p>";
+            }
+        }
+
+        fetchGeorgiaMembers();
+    </script>
+</body>
+</html>
