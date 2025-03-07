@@ -36,9 +36,11 @@
                     let memberDiv = document.createElement("div");
                     memberDiv.classList.add("member");
 
+                    // Use GovTrack's official photo URL format
                     let img = document.createElement("img");
-                    img.src = member.person.thumbnail || "https://via.placeholder.com/150";
+                    img.src = `https://www.govtrack.us/static/legislator-photos/${member.person.id}-100px.jpeg`;
                     img.alt = member.person.name;
+                    img.onerror = function() { this.src = "https://via.placeholder.com/150"; }; // Fallback image
 
                     let link = document.createElement("a");
                     link.href = `https://www.congress.gov/member/${member.person.id}`;
